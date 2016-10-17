@@ -1,0 +1,4 @@
+#Wed Feb 24 02:45:29 IST 2016
+__DEFAULT__=false
+org.eclipse.help.ui.localSearch.master=true
+expression=java.util.List

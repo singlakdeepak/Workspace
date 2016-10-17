@@ -1,0 +1,125 @@
+/*
+import java.awt.FlowLayout;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+public class checker
+{
+
+
+public BufferedImage Mat2BufferedImage(Mat m){
+//source: http://answers.opencv.org/question/10344/opencv-java-load-image-to-gui/
+//Fastest code
+//The output can be assigned either to a BufferedImage or to an Image
+
+ int type = BufferedImage.TYPE_BYTE_GRAY;
+ if ( m.channels() > 1 ) {
+     type = BufferedImage.TYPE_3BYTE_BGR;
+ }
+ int bufferSize = m.channels()*m.cols()*m.rows();
+ byte [] b = new byte[bufferSize];
+ m.get(0,0,b); // get all the pixels
+ BufferedImage image = new BufferedImage(m.cols(),m.rows(), type);
+ final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+ System.arraycopy(b, 0, targetPixels, 0, b.length);  
+ return image;
+
+}
+
+public void displayImage(Image img2)
+{   
+   //BufferedImage img=ImageIO.read(new File("/HelloOpenCV/lena.png"));
+   ImageIcon icon=new ImageIcon(img2);
+   JFrame frame=new JFrame();
+   frame.setLayout(new FlowLayout());        
+   frame.setSize(img2.getWidth(null)+50, img2.getHeight(null)+50);     
+   JLabel lbl=new JLabel();
+   lbl.setIcon(icon);
+   frame.add(lbl);
+   frame.setVisible(true);
+   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+}
+	
+	public static void main( String[] args )
+	{		System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
+	Mat mat = Mat.eye( 300, 300, CvType.CV_8UC1 );
+		BufferedImage by= new BufferedImage();
+
+	displayImage(by.Mat2BufferedImage(mat));
+	}
+	}*/
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.videoio.*;
+import org.opencv.imgcodecs.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class checker
+{
+    static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        System.loadLibrary("opencv_ffmpeg310_64");
+    }
+    public static void main( String[] args )
+    {
+        System.out.println("Welcome to OpenCV " + Core.VERSION);
+        Mat imgFrame=new Mat();
+        String imgPath=System.getProperty("user.dir")+"\\umcp.mpg";
+        System.out.println(imgPath);
+        VideoCapture videoCapture=new VideoCapture();
+        videoCapture.open(imgPath);
+        List<Mat> a= new ArrayList();
+
+
+        Size S = new Size( (int)videoCapture.get(Videoio.CAP_PROP_FRAME_WIDTH),
+                (int)videoCapture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
+
+        System.out.println("fourcc:  "+videoCapture.get(Videoio.CAP_PROP_FOURCC));
+
+        int askFileTypeBox = 0;
+        VideoWriter videoWriter=new VideoWriter(".\\make1.mpg",VideoWriter.fourcc('M','P','E','G'),videoCapture.get(Videoio.CAP_PROP_FPS),S,true);
+
+        System.out.println(Videoio.CAP_PROP_FPS);
+        if(videoCapture.isOpened() && videoWriter.isOpened()) {
+            System.out.println("Opened...");
+        }
+        else {
+            System.out.println("not opened");
+            return;
+        }
+
+        while(true)
+        {
+            //grab frame from file & throw to Mat
+            videoCapture.read(imgFrame);
+            if(imgFrame.empty() ) //Is video end?
+                break;
+
+
+            //System.out.println(imgFrame);
+           // Imgproc.cvtColor(imgFrame,imgFrame,Imgproc.COLOR_BGR2GRAY);
+            
+           //Imgcodecs.imwrite("xyz.jpg",imgFrame);
+            //videoWriter.write(imgFrame);
+            a.add(imgFrame);
+        }
+        System.out.print( a);
+       // Imgcodecs.imwrite("xyz.jpg",a.get(79));
+        
+        //System.out.println("abc");
+        //System.out.println(abc);
+        //videoWriter.release();
+    }
+}
